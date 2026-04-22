@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Готовим вместе — Рецепты</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f9f3eb;
+  --card: #fff;
+  --terra: #c05a3c;
+  --terra2: #e07a58;
+  --brown: #3e2110;
+  --sage: #7a9a6e;
+  --gold: #c8973c;
+  --muted: #9a7e6a;
+  --line: rgba(192,90,60,0.12);
+}
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--brown);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+.header {
+  background: var(--brown);
+  padding: 28px 20px 22px;
+  text-align: center;
+  position: relative;
+}
+.header-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 6px;
+}
+.header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 7vw, 42px);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.1;
+}
+.header-title em {
+  font-style: italic;
+  color: #e8b07a;
+}
+.header-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ─── NAV PILLS ─── */
+.nav-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--brown);
+  padding: 0 12px 16px;
+}
+.nav-wrap::-webkit-scrollbar { display: none; }
+.nav {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  margin: 0 auto;
+}
+.nav-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 30px;
+  padding: 7px 14px;
+  color: rgba(255,255,255,0.55);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.8); }
+.nav-btn.active {
+  background: var(--terra);
+  border-color: var(--terra);
+  color: #fff;
+}
+.nav-btn .n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.6;
+}
+.nav-btn.active .n { opacity: 1; }
+
+/* ─── RECIPE PAGE ─── */
+.page {
+  display: none;
+  padding: 24px 16px 60px;
+  max-width: 680px;
+  margin: 0 auto;
+  animation: fadeIn 0.35s ease;
+}
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero block */
+.recipe-hero {
+  border-radius: 24px;
+  padding: 28px 24px 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.recipe-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.5) 10px,
+    rgba(255,255,255,0.5) 11px
+  );
+}
+.recipe-emoji-big {
+  font-size: 52px;
+  line-height: 1;
+  display: block;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+}
+.recipe-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.recipe-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 7vw, 38px);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+.recipe-tagline {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.5;
+}
+
+/* Meta pills */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.meta-pill {
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Sections */
+.section {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 20px 20px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--terra);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Ingredients */
+.ingredients {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ing {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px dashed rgba(192,90,60,0.1);
+  font-size: 14px;
+}
+.ing:last-child { border-bottom: none; }
+.ing-name { font-weight: 400; color: var(--brown); }
+.ing-qty { font-weight: 500; color: var(--terra); font-size: 13px; text-align: right; flex-shrink: 0; margin-left: 12px; }
+
+/* Steps */
+.steps { display: flex; flex-direction: column; gap: 14px; }
+.step {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--terra);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-text {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: #4a3020;
+  padding-top: 6px;
+}
+.step-text strong { font-weight: 500; color: var(--brown); }
+
+/* Tip box */
+.tip {
+  background: linear-gradient(135deg, #fff8ee, #fdf3e3);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--gold);
+  font-size: 13px;
+  font-weight: 300;
+  color: #6a4e28;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.tip strong { font-weight: 500; color: var(--gold); }
+
+/* Nav buttons bottom */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+.btn-nav {
+  flex: 1;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-prev { background: #ece3d8; color: var(--muted); }
+.btn-next { background: var(--terra); color: #fff; }
+.btn-prev:hover { background: #e0d4c4; }
+.btn-next:hover { background: #b04e32; }
+.btn-prev:disabled, .btn-next:disabled { opacity: 0.3; cursor: default; }
+
+/* Hero colors per recipe */
+.h1 { background: linear-gradient(135deg, #8b3a20, #c05a3c); }
+.h2 { background: linear-gradient(135deg, #4a7a3e, #7aaa5e); }
+.h3 { background: linear-gradient(135deg, #a07030, #d4a050); }
+.h4 { background: linear-gradient(135deg, #7a3a20, #c06040); }
+.h5 { background: linear-gradient(135deg, #304a7a, #5a7ab0); }
+.h6 { background: linear-gradient(135deg, #5a3a7a, #9a6ab0); }
+.h7 { background: linear-gradient(135deg, #8b2a20, #c04030); }
+.h8 { background: linear-gradient(135deg, #7a5a20, #c09030); }
+.h9 { background: linear-gradient(135deg, #3a2010, #7a4020); }
+.h10 { background: linear-gradient(135deg, #6a3a4a, #b07080); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Рецептник для двоих</div>
+  <h1 class="header-title">Готовим <em>вместе</em></h1>
+  <p class="header-sub">10 рецептов — листай и готовь</p>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav" id="nav"></div>
+</div>
+
+<div id="pages"></div>
+
+<script>
+const recipes = [
+  {
+    emoji: "🍝",
+    name: "Паста Карбонара",
+    tagline: "Итальянская классика за 20 минут. Кремовый соус без сливок — только яйца и сыр.",
+    time: "20 мин", cost: "~250₽", servings: "2 порции", difficulty: "Легко",
+    hClass: "h1",
+    ingredients: [
+      { name: "Спагетти (или феттучине)", qty: "200 г" },
+      { name: "Бекон или панчетта", qty: "150 г" },
+      { name: "Яйца (целые)", qty: "2 шт" },
+      { name: "Желтки", qty: "2 шт" },
+      { name: "Пармезан или пекорино, тёртый", qty: "80 г" },
+      { name: "Чёрный перец молотый", qty: "по вкусу" },
+      { name: "Соль", qty: "для воды" },
+    ],
+    steps: [
+      "Вскипяти большую кастрюлю воды, хорошо посоли. Вари спагетти до состояния <strong>аль денте</strong> — на 1–2 минуты меньше, чем указано на пачке.",
+      "Пока варится паста, нарежь бекон небольшими кусочками и обжарь на сухой сковороде до золотистого цвета. Огонь — средний. Жир должен вытопиться.",
+      "В миске смешай яйца + желтки, тёртый пармезан и щедро молотый чёрный перец. Взбей вилкой до однородности.",
+      "Перед сливом воды — <strong>обязательно</strong> зачерпни стакан крахмалистой воды от пасты. Это главный секрет соуса.",
+      "Слей пасту и сразу брось её на сковороду к бекону. Огонь — <strong>выключи</strong>. Перемешай.",
+      "Влей яичную смесь и быстро перемешивай, добавляя по чуть-чуть пасту-воду, пока не получится кремовый соус. Жар сковороды доведёт яйца — главное не перегреть, чтобы не получился омлет.",
+      "Разложи по тарелкам, добавь ещё пармезана и перца. Подавай сразу!"
+    ],
+    tip: "💡 <strong>Лайфхак:</strong> Никаких сливок — это не Карбонара. Весь секрет в правильной температуре: соус делается теплом выключенной сковороды, а не огнём."
+  },
+  {
+    emoji: "🥗",
+    name: "Греческий салат",
+    tagline: "Свежо, легко, без готовки. Подать с тёплыми питами — идеальный лёгкий ужин.",
+    time: "15 мин", cost: "~200₽", servings: "2 порции", difficulty: "Очень легко",
+    hClass: "h2",
+    ingredients: [
+      { name: "Помидоры (крупные)", qty: "3 шт" },
+      { name: "Огурцы", qty: "2 шт" },
+      { name: "Болгарский перец (красный)", qty: "1 шт" },
+      { name: "Красный лук", qty: "½ шт" },
+      { name: "Маслины без косточек", qty: "100 г" },
+      { name: "Сыр фета", qty: "150 г" },
+      { name: "Оливковое масло", qty: "3 ст.л." },
+      { name: "Лимонный сок", qty: "1 ст.л." },
+      { name: "Сушёный орегано", qty: "1 ч.л." },
+      { name: "Соль, перец", qty: "по вкусу" },
+      { name: "Питы или лаваш", qty: "2–4 шт" },
+    ],
+    steps: [
+      "Помидоры нарежь крупными дольками, огурцы — полукольцами, перец — соломкой, лук — тонкими полукольцами.",
+      "Всё сложи в широкую тарелку или салатник. Добавь маслины целиком.",
+      "Смешай оливковое масло, лимонный сок, орегано, соль и перец — это заправка. Полей сверху.",
+      "Фету нарежь кубиками (или разломай руками) и уложи <strong>поверх</strong> — не перемешивай, пусть остаётся красиво.",
+      "Питы разогрей на сухой сковороде по 1–2 минуты с каждой стороны до лёгкой румяности.",
+      "Подавай сразу — салат выглядит лучше всего пока свежий!"
+    ],
+    tip: "💡 <strong>Подача:</strong> Красиво выглядит в плоской широкой тарелке с целым куском феты в центре, политым маслом с орегано — как в греческих тавернах."
+  },
+  {
+    emoji: "🥞",
+    name: "Американские панкейки",
+    tagline: "Пушистые, золотистые, с мёдом и ягодами. Один льёт тесто — второй переворачивает.",
+    time: "25 мин", cost: "~150₽", servings: "8–10 штук", difficulty: "Легко",
+    hClass: "h3",
+    ingredients: [
+      { name: "Мука", qty: "200 г" },
+      { name: "Молоко", qty: "200 мл" },
+      { name: "Яйцо", qty: "2 шт" },
+      { name: "Сахар", qty: "2 ст.л." },
+      { name: "Разрыхлитель", qty: "1.5 ч.л." },
+      { name: "Соль", qty: "щепотка" },
+      { name: "Масло сливочное (растопленное)", qty: "30 г" },
+      { name: "Ванильный экстракт или ванилин", qty: "1 ч.л." },
+      { name: "Масло для жарки", qty: "немного" },
+      { name: "Для подачи: мёд, ягоды, сметана или нутелла", qty: "по желанию" },
+    ],
+    steps: [
+      "В большой миске смешай муку, сахар, разрыхлитель и соль.",
+      "В другой миске взбей яйца с молоком, добавь растопленное масло и ваниль.",
+      "Влей жидкие ингредиенты в сухие и <strong>перемешай быстро</strong> — тесто должно быть комковатым. Не мешай до гладкости — это убьёт пышность!",
+      "Дай тесту постоять 5 минут.",
+      "Разогрей антипригарную сковороду на среднем огне, смажь тонко маслом. Влей примерно 3 ст.л. теста на панкейк.",
+      "Жди, пока по поверхности появятся <strong>пузырьки</strong> и края начнут подсыхать — это сигнал переворачивать (около 2 минут). Вторая сторона жарится 1–1.5 мин.",
+      "Складывай стопкой и подавай с мёдом, ягодами, вареньем или шариком мороженого!"
+    ],
+    tip: "💡 <strong>Секрет пышности:</strong> Не перемешивай тесто до однородности — комочки это норма и залог воздушной текстуры. И не давить лопаткой при жарке!"
+  },
+  {
+    emoji: "🍕",
+    name: "Пицца на лаваше",
+    tagline: "Тонкая хрустящая основа, минимум хлопот. Каждый делает свою половину — у кого вкуснее?",
+    time: "15 мин", cost: "~200₽", servings: "2 порции", difficulty: "Очень легко",
+    hClass: "h4",
+    ingredients: [
+      { name: "Тонкий лаваш", qty: "2 листа" },
+      { name: "Томатный соус или кетчуп", qty: "4 ст.л." },
+      { name: "Моцарелла (тёртая или кусочками)", qty: "150 г" },
+      { name: "Помидоры", qty: "1–2 шт" },
+      { name: "Ветчина или варёная колбаса", qty: "100 г" },
+      { name: "Болгарский перец", qty: "½ шт" },
+      { name: "Оливки или маслины", qty: "горсть" },
+      { name: "Орегано сушёный", qty: "1 ч.л." },
+      { name: "Оливковое масло", qty: "1 ст.л." },
+    ],
+    steps: [
+      "Разогрей духовку до <strong>220°C</strong>. Противень застели пергаментом.",
+      "Разложи лаваш на противень. Если он больше противня — немного подвернуть края.",
+      "Смажь томатным соусом, отступая 1 см от края.",
+      "Посыпь <strong>половиной моцареллы</strong>. Это нижний слой — он не даст начинке \"утопить\" лаваш.",
+      "Разложи начинку: ветчину, перец, помидоры, оливки. <strong>Каждый кладёт своё!</strong>",
+      "Сверху — остаток моцареллы, орегано, капля оливкового масла.",
+      "Выпекай <strong>8–10 минут</strong> до золотистых краёв и пузырящегося сыра. Режь сразу и ешь горячей!"
+    ],
+    tip: "💡 <strong>Вариации:</strong> Попробуй вместо томатного — белый соус (сметана + чеснок + зелень). Или BBQ-соус с курицей и кукурузой — получается отдельная вселенная."
+  },
+  {
+    emoji: "🍜",
+    name: "Рамен дома",
+    tagline: "Глубокий бульон, мягкое яйцо, аромат — ресторанное ощущение без ресторанных цен.",
+    time: "30 мин", cost: "~200₽", servings: "2 порции", difficulty: "Средне",
+    hClass: "h5",
+    ingredients: [
+      { name: "Рамен-лапша или гречневая лапша", qty: "160 г" },
+      { name: "Яйца", qty: "2 шт" },
+      { name: "Бульон куриный или грибной", qty: "700 мл" },
+      { name: "Мисо-паста или соевый соус", qty: "2–3 ст.л." },
+      { name: "Чеснок", qty: "2 зубчика" },
+      { name: "Имбирь свежий (или сухой)", qty: "1 ч.л." },
+      { name: "Кунжутное масло", qty: "1 ч.л." },
+      { name: "Зелёный лук", qty: "2–3 пера" },
+      { name: "Кунжут", qty: "1 ч.л." },
+      { name: "Нори (морские водоросли)", qty: "по желанию" },
+      { name: "Кукуруза, бок-чой, гриб", qty: "по желанию" },
+    ],
+    steps: [
+      "Свари <strong>яйца вкрутую 7 минут</strong> (желток будет чуть мягким внутри), потом сразу в холодную воду. Почисти и разрежь пополам — это будет самая красивая часть миски.",
+      "В кастрюле обжарь на масле измельчённый чеснок и имбирь 1–2 минуты до аромата.",
+      "Влей бульон, доведи до кипения. Добавь мисо-пасту или соевый соус, кунжутное масло. Попробуй и отрегулируй вкус.",
+      "Отдельно свари лапшу согласно инструкции на пачке, слей воду.",
+      "В каждую миску положи порцию лапши, залей горячим бульоном.",
+      "Красиво разложи топпинги: <strong>половинки яйца, зелёный лук, кунжут</strong>. Добавь нори, кукурузу, грибы — что есть.",
+      "Подавай немедленно — рамен не ждёт!"
+    ],
+    tip: "💡 <strong>Эстетика подачи:</strong> Большие глубокие миски, тёмного цвета если есть. Каждый топпинг в своём секторе — не перемешивай всё сразу. Выглядит невероятно."
+  },
+  {
+    emoji: "🫔",
+    name: "Буррито дома",
+    tagline: "Каждый собирает своё — выбираешь начинку, заворачиваешь, нарезаешь на доске.",
+    time: "25 мин", cost: "~220₽", servings: "2 порции", difficulty: "Легко",
+    hClass: "h6",
+    ingredients: [
+      { name: "Большие тортильи (или лаваш)", qty: "2 шт" },
+      { name: "Куриное филе (или консервированная фасоль)", qty: "250 г" },
+      { name: "Рис", qty: "100 г" },
+      { name: "Консервированная фасоль (красная)", qty: "200 г" },
+      { name: "Сыр (тёртый, любой)", qty: "80 г" },
+      { name: "Сметана или соус", qty: "3 ст.л." },
+      { name: "Помидор", qty: "1 шт" },
+      { name: "Авокадо (или просто огурец)", qty: "½ шт" },
+      { name: "Паприка, кумин, чеснок", qty: "по вкусу" },
+      { name: "Соль", qty: "по вкусу" },
+    ],
+    steps: [
+      "Свари рис. Обжарь курицу с паприкой, кумином и чесноком до готовности, нарежь полосками. Или просто прогрей консервированную фасоль с теми же специями.",
+      "Подготовь начинки: нарежь помидор кубиками, авокадо ломтиками.",
+      "Тортилью чуть прогрей на сухой сковороде — 30 секунд с каждой стороны, она станет мягкой и послушной.",
+      "Выкладывай начинку <strong>в центр, не до краёв</strong>: рис, курица/фасоль, сыр, помидор, авокадо, сметана.",
+      "Заворачивай: загни боковые края, потом плотно скрути снизу вверх. Положи швом вниз.",
+      "Разогрей буррито на сухой сковороде 1–2 мин с каждой стороны — получится хрустящая корочка.",
+      "Нарежь наискосок и подай на деревянной доске с соусом. Красиво!"
+    ],
+    tip: "💡 <strong>Соус-минутка:</strong> Смешай сметану с чесноком, лимонным соком и зеленью — это будет и вкуснее, и красивее, чем просто кетчуп."
+  },
+  {
+    emoji: "🍳",
+    name: "Шакшука",
+    tagline: "Яйца в томатном соусе — одна сковорода, двадцать минут, ресторанная подача.",
+    time: "20 мин", cost: "~120₽", servings: "2 порции", difficulty: "Легко",
+    hClass: "h7",
+    ingredients: [
+      { name: "Яйца", qty: "4 шт" },
+      { name: "Консервированные помидоры (или свежие)", qty: "400 г" },
+      { name: "Болгарский перец", qty: "1 шт" },
+      { name: "Лук", qty: "1 шт" },
+      { name: "Чеснок", qty: "3 зубчика" },
+      { name: "Томатная паста", qty: "1 ст.л." },
+      { name: "Паприка", qty: "1 ч.л." },
+      { name: "Кумин (зира)", qty: "½ ч.л." },
+      { name: "Острый перец или чили", qty: "по вкусу" },
+      { name: "Оливковое масло", qty: "2 ст.л." },
+      { name: "Соль, перец", qty: "по вкусу" },
+      { name: "Петрушка или кинза", qty: "для подачи" },
+      { name: "Хлеб или лаваш", qty: "для подачи" },
+    ],
+    steps: [
+      "Лук нарежь полукольцами, перец — полосками. Обжарь на оливковом масле в глубокой сковороде 5–7 минут до мягкости.",
+      "Добавь измельчённый чеснок, паприку, кумин, чили. Жарь ещё 1 минуту — аромат специй раскроется.",
+      "Добавь томатную пасту, перемешай. Затем влей консервированные помидоры, раздавив их ложкой.",
+      "Посоли, поперчи. Туши на среднем огне <strong>8–10 минут</strong> до загустения соуса.",
+      "Ложкой сделай в соусе 4 углубления и аккуратно разбей в каждое по яйцу.",
+      "Накрой крышкой и готовь на <strong>слабом огне 5–7 минут</strong>. Белок должен схватиться, желток — остаться жидким.",
+      "Прямо в сковороде посыпь зеленью и подай с хлебом. Есть прямо из сковороды — так и принято!"
+    ],
+    tip: "💡 <strong>Главный момент:</strong> Не перекрой желток. Он должен быть жидким — это и красиво, и вкусно. Смотри за сковородой в последние пару минут."
+  },
+  {
+    emoji: "🫕",
+    name: "Крем-суп из тыквы",
+    tagline: "Бархатная текстура, сладость тыквы, аромат специй. Уютный осенний вечер в тарелке.",
+    time: "35 мин", cost: "~180₽", servings: "2–3 порции", difficulty: "Легко",
+    hClass: "h8",
+    ingredients: [
+      { name: "Тыква (очищенная)", qty: "600 г" },
+      { name: "Лук", qty: "1 шт" },
+      { name: "Чеснок", qty: "2 зубчика" },
+      { name: "Бульон куриный или овощной", qty: "500 мл" },
+      { name: "Сливки 20%", qty: "100 мл" },
+      { name: "Масло сливочное", qty: "20 г" },
+      { name: "Мускатный орех", qty: "щепотка" },
+      { name: "Имбирь молотый", qty: "½ ч.л." },
+      { name: "Соль, перец", qty: "по вкусу" },
+      { name: "Тыквенные семечки (для подачи)", qty: "горсть" },
+      { name: "Сливки для капли сверху", qty: "1–2 ст.л." },
+    ],
+    steps: [
+      "Тыкву нарежь кубиками ~3 см. Лук — произвольно, не мельчи.",
+      "В кастрюле растопи масло, обжарь лук 3–4 минуты до прозрачности. Добавь чеснок, ещё минуту.",
+      "Всыпь тыкву, перемешай. Влей бульон — он должен почти покрывать тыкву.",
+      "Добавь имбирь, мускатный орех, соль. Доведи до кипения и вари на среднем огне <strong>15–20 минут</strong> до мягкости тыквы (проверяй вилкой).",
+      "Пробей блендером до <strong>полной однородности</strong>. Влей сливки, ещё раз пробей. Попробуй, отрегулируй соль.",
+      "Если суп слишком густой — добавь немного горячей воды или бульона до нужной консистенции.",
+      "Разлей по мискам. Сверху — <strong>капля сливок, тыквенные семечки</strong>, щепотка перца. Можно нарисовать спираль сливками — выглядит как в кафе!"
+    ],
+    tip: "💡 <strong>Подача:</strong> Тёмные глубокие тарелки делают оранжевый суп невероятно красивым. Хлеб с маслом рядом — и идеальный ужин готов."
+  },
+  {
+    emoji: "🍫",
+    name: "Брауни",
+    tagline: "Тёплый, тягучий, шоколадный. С шариком мороженого — это уже кино-вечер.",
+    time: "35 мин", cost: "~180₽", servings: "6–8 кусочков", difficulty: "Средне",
+    hClass: "h9",
+    ingredients: [
+      { name: "Шоколад тёмный (70%)", qty: "150 г" },
+      { name: "Масло сливочное", qty: "100 г" },
+      { name: "Сахар", qty: "150 г" },
+      { name: "Яйца", qty: "3 шт" },
+      { name: "Мука", qty: "70 г" },
+      { name: "Какао-порошок", qty: "30 г" },
+      { name: "Соль", qty: "щепотка" },
+      { name: "Ванильный экстракт", qty: "1 ч.л." },
+      { name: "Грецкие орехи (опционально)", qty: "50 г" },
+    ],
+    steps: [
+      "Разогрей духовку до <strong>175°C</strong>. Форму для выпечки (~20×20 см) застели пергаментом и смажь маслом.",
+      "Растопи шоколад с маслом на водяной бане или в микроволновке (30 сек × 2–3 раза, мешая). Дай немного остыть.",
+      "Добавь в шоколадную массу сахар, ваниль, соль. Перемешай.",
+      "Вбей яйца по одному, хорошо вмешивая каждое — тесто должно стать <strong>блестящим и густым</strong>.",
+      "Просей муку с какао, добавь в тесто. Перемешай <strong>до исчезновения сухих полос</strong> — не больше.",
+      "Если используешь орехи — добавь сейчас. Вылей тесто в форму.",
+      "Выпекай <strong>20–22 минуты</strong>. Края должны схватиться, центр — слегка дрожать. Это нормально! Дай остыть 15 минут — брауни дойдёт сам.",
+      "Нарежь квадратами. Подай тёплым с мороженым — ванильным или шоколадным!"
+    ],
+    tip: "💡 <strong>Главная ошибка:</strong> Перепечь. Лучше чуть недопечь — центр подтянется пока остывает. Тягучий брауни > сухой брауни всегда."
+  },
+  {
+    emoji: "🧆",
+    name: "Сырники с джемом",
+    tagline: "Мягкие, золотистые, с хрустящей корочкой. Уютный завтрак или ужин на двоих.",
+    time: "25 мин", cost: "~120₽", servings: "8–10 штук", difficulty: "Легко",
+    hClass: "h10",
+    ingredients: [
+      { name: "Творог (9% или мягкий)", qty: "500 г" },
+      { name: "Яйца", qty: "2 шт" },
+      { name: "Сахар", qty: "3 ст.л." },
+      { name: "Мука (+ для обвалки)", qty: "4–5 ст.л." },
+      { name: "Ванильный сахар или ванилин", qty: "1 ч.л." },
+      { name: "Соль", qty: "щепотка" },
+      { name: "Масло для жарки", qty: "2–3 ст.л." },
+      { name: "Джем, варенье или сметана", qty: "для подачи" },
+    ],
+    steps: [
+      "Если творог зернистый — разомни вилкой или пробей блендером до гладкости. Чем однороднее, тем лучше сырники.",
+      "Добавь яйца, сахар, ванилин, соль. Хорошо перемешай.",
+      "Всыпь муку и замеси мягкое тесто. Оно будет <strong>слегка липким</strong> — это нормально. Не добавляй лишнюю муку — сырники будут резиновыми.",
+      "Присыпь руки и доску мукой. Лепи небольшие <strong>круглые котлетки</strong> ~1.5 см толщиной, обваляй в муке с двух сторон.",
+      "Разогрей сковороду с маслом на <strong>среднем огне</strong>. Выложи сырники, не трогай 3–4 минуты — пусть схватится корочка.",
+      "Переверни и жарь ещё 3–4 минуты. Можно накрыть крышкой на пару минут — дойдут внутри.",
+      "Подавай стопкой: джем, сметана, мёд, ягоды рядом. Фотогенично и вкусно сразу!"
+    ],
+    tip: "💡 <strong>Если тесто слишком жидкое:</strong> Добавь ещё ложку муки. Но лучше — охлади тесто в холодильнике 15 минут, лепить будет значительно проще."
+  },
+];
+
+const navEl = document.getElementById('nav');
+const pagesEl = document.getElementById('pages');
+
+recipes.forEach((r, i) => {
+  // Nav button
+  const btn = document.createElement('button');
+  btn.className = 'nav-btn' + (i === 0 ? ' active' : '');
+  btn.innerHTML = `<span class="n">${i+1}</span>${r.emoji}`;
+  btn.onclick = () => showPage(i);
+  navEl.appendChild(btn);
+
+  // Page
+  const page = document.createElement('div');
+  page.className = 'page' + (i === 0 ? ' active' : '');
+  page.id = `page-${i}`;
+
+  const ingsHTML = r.ingredients.map(ing =>
+    `<div class="ing"><span class="ing-name">${ing.name}</span><span class="ing-qty">${ing.qty}</span></div>`
+  ).join('');
+
+  const stepsHTML = r.steps.map((s, si) =>
+    `<div class="step"><div class="step-num">${si+1}</div><div class="step-text">${s}</div></div>`
+  ).join('');
+
+  page.innerHTML = `
+    <div class="recipe-hero ${r.hClass}">
+      <span class="recipe-emoji-big">${r.emoji}</span>
+      <div class="recipe-num">Рецепт ${i+1} из ${recipes.length}</div>
+      <div class="recipe-name">${r.name}</div>
+      <div class="recipe-tagline">${r.tagline}</div>
+      <div class="meta">
+        <span class="meta-pill">⏱ ${r.time}</span>
+        <span class="meta-pill">💰 ${r.cost}</span>
+        <span class="meta-pill">🍽 ${r.servings}</span>
+        <span class="meta-pill">⭐ ${r.difficulty}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🛒 Ингредиенты</div>
+      <div class="ingredients">${ingsHTML}</div>
+    </div>
+
+    <div class="tip">${r.tip}</div>
+
+    <div class="section">
+      <div class="section-title">👨‍🍳 Приготовление</div>
+      <div class="steps">${stepsHTML}</div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="btn-nav btn-prev" onclick="showPage(${i-1})" ${i===0?'disabled':''}>← Назад</button>
+      <button class="btn-nav btn-next" onclick="showPage(${i+1})" ${i===recipes.length-1?'disabled':''}>Вперёд →</button>
+    </div>
+  `;
+
+  pagesEl.appendChild(page);
+});
+
+function showPage(idx) {
+  if (idx < 0 || idx >= recipes.length) return;
+  document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  // Scroll nav btn into view
+  navEl.querySelectorAll('.nav-btn')[idx].scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
